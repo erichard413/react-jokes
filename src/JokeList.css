@@ -13,6 +13,13 @@
   background-color: tomato;
   color: white;
 }
+.JokeList-resetvotes {
+  margin: 1em 0;
+  font-size: 150%;
+  border-radius: 0.5em;
+  background-color: rgb(71, 83, 255);
+  color: white;
+}
 
 .JokeList-getmore:disabled {
   background-color: #ccc;

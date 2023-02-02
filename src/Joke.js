@@ -3,7 +3,7 @@ import "./Joke.css";
 
 /** A single joke, along with vote up/down buttons. */
 
-const Joke = ({id, vote, votes, text}) => {
+const Joke = ({id, vote, votes, toggleLock, isLocked, text}) => {
     return (
         <div className="Joke">
         <div className="Joke-votearea">
@@ -13,6 +13,9 @@ const Joke = ({id, vote, votes, text}) => {
 
           <button onClick={()=> vote(id, -1)}>
             <i className="fas fa-thumbs-down" />
+          </button>
+          <button onClick={()=> toggleLock(id)}>
+            {isLocked ?  "🔒" : "🔓" }
           </button>
             {votes}
         </div>

@@ -13,23 +13,29 @@ const JokeList = () => {
     })
 
     useEffect(()=>{
-        getJokes();
+        setJokes(getJokesFromLS())
     }, [])
 
     useEffect(()=> {
       if (jokes.jokes) {
          sortedJokes = jokes.jokes.sort((a, b) => b.votes - a.votes);
-      } 
-     
+      }
+      localStorage.setItem('jokes', JSON.stringify(jokes))     
     }, [jokes])
+
+    const getJokesFromLS = () => {
+      let data = JSON.parse(localStorage.getItem('jokes'))
+      return data;
+    }
 
     const getJokes = () => {
           // load jokes one at a time, adding not-yet-seen jokes
           const asyncJokes = async () => {
           let newJokes = [];
-          let seenJokes = new Set(); 
-            let i = 0;
-            while (newJokes.length < numJokesToGet && i < 10) {
+          let seenJokes = new Set();
+          let savedJokes = jokes.jokes.filter(j => j.isLocked === true);
+          savedJokes.map(sj => newJokes.push(sj));
+            while (newJokes.length < numJokesToGet) {
                 const res =  await axios.get("https://icanhazdadjoke.com", {
                 headers: { Accept: "application/json" }
                 });
@@ -40,10 +46,8 @@ const JokeList = () => {
                     console.log("duplicate found!");
                   } else {
                     seenJokes.add(joke.id);
-                    newJokes.push({ ...joke, votes: 0 });
+                    newJokes.push({ ...joke, votes: 0, isLocked: false });
                   }
-                  i++;
-
           }
           setJokes({
             jokes: [...newJokes],
@@ -66,6 +70,12 @@ const JokeList = () => {
           setJokes(copy);
           
     }
+
+    const resetVotes = () => {
+      let copy = {...jokes}
+      copy.jokes.map(j => j.votes = 0)
+      setJokes(copy);
+    }
     
     if (jokes.jokes) {
       sortedJokes = jokes.jokes.sort((a, b) => b.votes - a.votes);
@@ -79,6 +89,14 @@ const JokeList = () => {
       )
     }
 
+    const toggleLock = (id) => {
+      let joke = jokes.jokes.filter(j => j.id === id)
+      joke[0].isLocked = joke[0].isLocked ? false : true
+      let jokesCopy = {...jokes};
+      jokesCopy.jokes.map(j=> j.id === id ? joke[0] : j);
+      setJokes(jokesCopy);
+    }
+
     return (
         
         <div className="JokeList">
@@ -88,8 +106,8 @@ const JokeList = () => {
         >
           Get New Jokes
         </button>
-            <p>Jokes go here</p>
-            {sortedJokes.map(j => <Joke key={j.id} id={j.id} vote={vote} votes={j.votes} text={j.joke} />)}
+            {sortedJokes.map(j => <Joke key={j.id} id={j.id} vote={vote} votes={j.votes} isLocked={j.isLocked} toggleLock={toggleLock} text={j.joke} />)}
+        <button className="JokeList-resetvotes" onClick={resetVotes}>Reset Votes</button>
         </div>
     )
 }

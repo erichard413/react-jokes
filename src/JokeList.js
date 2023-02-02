@@ -15,6 +15,7 @@ const JokeList = () => {
     useEffect(()=>{
       let data = getJokesFromLS();
       data !== null && setJokes(data);
+      getJokes();
     }, [])
 
     useEffect(()=> {

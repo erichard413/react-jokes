@@ -13,7 +13,8 @@ const JokeList = () => {
     })
 
     useEffect(()=>{
-        setJokes(getJokesFromLS())
+      let data = getJokesFromLS();
+      data !== null && setJokes(data);
     }, [])
 
     useEffect(()=> {
@@ -24,7 +25,7 @@ const JokeList = () => {
     }, [jokes])
 
     const getJokesFromLS = () => {
-      let data = JSON.parse(localStorage.getItem('jokes'))
+      let data = JSON.parse(localStorage.getItem('jokes') || null)
       return data;
     }
 
